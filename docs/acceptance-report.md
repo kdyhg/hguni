@@ -9,7 +9,7 @@
 | TypeScript strict | PASS | `npm run typecheck` |
 | ESLint | PASS | `npm run lint` |
 | 단위 테스트 | PASS | Vitest 5파일, 12테스트(동일 요청 100회 재전송 포함) |
-| production build | PASS | Next.js 27개 route/page 생성 |
+| production build | PASS | Next.js 정적 페이지 생성 단계 31/31, 앱 라우트 목록 정상 산출 |
 | 학생회 tablet/mobile 흐름 | PASS | Playwright WebKit 5 pass, 1 의도적 project skip: PIN→명단→검색→선택→접수 |
 | 교사 로그인 흐름 | PASS | mock 이메일·비밀번호 로그인 후 오늘 내역 |
 | 시각 점검 | PASS | `docs/screenshots/` 3장, touch target/단일 주 동작/광학 fallback 확인 |
