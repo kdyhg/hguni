@@ -1,0 +1,2 @@
+import Link from "next/link"; import { OpticalSurface } from "@/components/ui/OpticalSurface"; import { ResetPasswordForm } from "@/components/teacher/ResetPasswordForm";
+export default function ResetPasswordPage(){return <main className="page-shell"><OpticalSurface className="screen" style={{minHeight:560}}><div className="center-stage"><section className="narrow stack"><div><p className="eyebrow">교사 계정</p><h1>새 비밀번호</h1></div><ResetPasswordForm/><Link className="text-link" href="/teacher/login">로그인으로 이동</Link></section></div></OpticalSurface></main>}

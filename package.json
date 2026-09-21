@@ -1,0 +1,43 @@
+{
+  "name": "hguni-morning-guidance",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "bridge": "tsx bridge/main.ts",
+    "bridge:check": "tsx bridge/check-connection.ts",
+    "bootstrap-admin": "tsx scripts/bootstrap-admin.ts"
+  },
+  "dependencies": {
+    "@supabase/ssr": "0.12.7",
+    "@supabase/supabase-js": "2.116.0",
+    "argon2": "0.44.0",
+    "mssql": "12.7.2",
+    "next": "16.3.5",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "zod": "4.1.11"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/mssql": "9.1.8",
+    "@types/node": "24.7.2",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "eslint": "9.37.0",
+    "eslint-config-next": "16.3.5",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3",
+    "vitest": "5.0.1"
+  }
+}
