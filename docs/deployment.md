@@ -1,42 +1,50 @@
-# 배포 안내
+# 로컬 Windows 배포 안내
 
-## 1. 전용 Supabase
+## 사전 조건
 
-1. 기존 서비스와 분리된 프로젝트를 만든다.
-2. `supabase/migrations/001_core.sql`부터 `005_access_control.sql`까지 순서대로 적용한다.
-3. 프로젝트 DB 설정에 `app.source_scope`를 운영 `SOURCE_SCOPE`와 동일하게 지정한다.
-4. 공개 회원가입을 끄고 Site URL과 `/teacher/accept-invite`, `/teacher/reset-password` redirect URL을 allowlist에 등록한다.
-5. SQL 검사에서 `anon`/`authenticated`가 앱 테이블과 RPC를 직접 실행할 수 없는지 확인한다.
-6. Dashboard에서 최초 관리자 이메일을 초대하고 이메일 확인 뒤 `npm run bootstrap-admin`을 한 번 실행한다.
+- Windows 10/11 또는 Windows Server
+- Node.js 22 이상과 npm
+- 고정 IP 또는 DHCP 예약을 받은 교내 PC
+- 태블릿과 서버가 서로 접근 가능한 신뢰된 교내망
+- 유니쿨 SQL Server 접근 권한
 
-## 2. Vercel
+## 최초 설치
 
-GitHub의 private `kdyhg/hguni` 저장소를 새 Vercel 프로젝트에 연결한다. 운영 환경변수:
+1. 승인된 Git commit의 전체 폴더를 서버 PC에 복사한다.
+2. `최초설치.cmd`를 실행하고 최초 관리자 이메일과 8자 이상 비밀번호를 입력한다.
+3. 스크립트가 `.env.local`, `data/hguni.db`, 프로덕션 빌드를 준비한다.
+4. `방화벽허용.cmd`를 관리자 권한으로 실행한다. 이 규칙은 Private 프로필의 TCP 3000만 허용한다.
+5. `서버시작.cmd`를 실행한다.
+6. `서버상태.cmd`가 보여 주는 `http://교내IP:3000/teacher/login`에 접속한다.
+7. 교사 설정에서 PIN을 만들고, 중계 token을 발급하고, 담당교사·활동시간·허용항목을 설정한다.
+
+## `.env.local` 핵심값
 
 ```dotenv
 APP_ENV=production
-APP_BASE_URL=https://실제주소
+APP_BASE_URL=http://교내고정IP:3000
+COOKIE_SECURE=false
 USE_MOCK_DATA=false
-NEXT_PUBLIC_SUPABASE_URL=https://프로젝트.supabase.co
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
-SUPABASE_URL=https://프로젝트.supabase.co
-SUPABASE_SECRET_KEY=sb_secret_...
-PIN_PEPPER=서로다른-고엔트로피-비밀값
-BOOTSTRAP_ADMIN_EMAIL=최초관리자@학교도메인
-SOURCE_SCOPE=hguni-production-school-a
+LOCAL_DATABASE_PATH=./data/hguni.db
+PIN_PEPPER=최소32자_무작위값
+SOURCE_SCOPE=학교별고유범위
 REAL_WRITES_ENABLED=false
+GOOGLE_SHEETS_ENABLED=false
 ```
 
-`SUPABASE_SECRET_KEY`, `PIN_PEPPER`에는 `NEXT_PUBLIC_`을 붙이지 않는다. 학교 SQL host/user/password는 Vercel에 넣지 않는다. Preview에는 별도 Supabase와 별도 scope·token만 사용하며 운영 중계가 Preview를 poll하지 못하게 한다.
+실제 입력 승인이 끝나기 전에는 `REAL_WRITES_ENABLED=false`를 유지한다. HTTPS 역방향 프록시를 설치한 경우에만 URL을 HTTPS로 바꾸고 `COOKIE_SECURE=true`로 설정한다.
 
-## 3. 활성화 순서
+## 자동 시작
 
-1. 배포 후 교사 로그인·쿠키·Origin 검사·`Cache-Control: no-store` 확인
-2. 설정에서 bridge token을 한 번 발급하고 즉시 학교 PC에 저장
-3. 학교 PC 연결 검사, 카탈로그 업로드, 담당교사 선택
-4. 활동시간·허용항목·PIN 저장
-5. 허가된 시험 학생으로 입력과 영수증 복구 확인
-6. 자동 취소가 검증되지 않았으면 수동 확인 상태 유지
-7. 운영 검증을 마친 뒤에만 Vercel `REAL_WRITES_ENABLED`와 학교 PC `realWritesEnabled`를 승인 절차에 따라 변경
+관리자 권한으로 `자동시작등록.cmd`를 실행하면 `HguniMorningServer`가 부팅 시 웹 서버·중계·선택적 Sheets worker를 시작하고, `HguniMorningBackup`이 매일 16:30 SQLite 백업을 만든다. 등록 후 반드시 재부팅하여 `서버상태.cmd`와 실제 태블릿 접속을 확인한다.
 
-이 저장소에는 실제 Supabase/Vercel 자격증명이 없어 이 세션에서 원격 서비스 배포를 수행하지 않았다.
+## Google Sheets 선택 연동
+
+1. Google Cloud 프로젝트에서 Sheets API를 활성화한다.
+2. 서비스 계정을 만들고 JSON 키를 발급한다.
+3. 빈 스프레드시트를 만들고 서비스 계정 이메일에 편집 권한으로 공유한다.
+4. 키를 `config/google-service-account.json`에 저장한다.
+5. `.env.local`에서 `GOOGLE_SHEETS_ENABLED=true`, `GOOGLE_SHEETS_SPREADSHEET_ID=...`를 설정한다.
+6. 서버를 재시작한다. `아침선도 기록` 시트와 머리글은 worker가 자동 생성한다.
+
+서비스 계정 생성과 키 보관은 [Google 공식 서버 간 인증 안내](https://developers.google.com/identity/protocols/oauth2/service-account)를 따른다. 표준 Sheets API에는 분당 할당량이 있으므로 운영 DB로 사용하지 않고 일괄 동기화만 한다. [Sheets API 사용 제한](https://developers.google.com/workspace/sheets/api/limits)

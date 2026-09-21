@@ -23,6 +23,6 @@
 - `class`의 정확한 학적 의미와 진급/이월 범위
 - 운영 DB 계정의 영수증 DDL·INSERT·DELETE 최소 권한
 - 삭제가 교정점수·집계·학교 정책에 미치는 영향
-- 실제 학교망의 SQL TLS 인증서와 외부 HTTPS 접근
+- 실제 학교망의 SQL TLS 인증서와 교내 HTTP/내부 TLS 정책
 
 이 항목을 확인하기 전 `schemaVerified`, `realWritesEnabled`, `cancellationVerified`를 true로 설정하지 않는다. 실제 학교 DB 연결이나 쓰기는 이 구현 세션에서 수행하지 않았다.
