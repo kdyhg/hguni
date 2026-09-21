@@ -4,6 +4,7 @@ import { parseJson, pinSchema } from "@/lib/domain/validation";
 import { assertSameOrigin } from "@/lib/server/csrf";
 import { ok, routeError } from "@/lib/server/http";
 import { storeError } from "@/lib/server/store-error";
+import { env } from "@/lib/server/env";
 
 export async function POST(request: Request) {
   try {
@@ -12,7 +13,7 @@ export async function POST(request: Request) {
     const clientKey = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
     const result = await store().unlock(pin, clientKey);
     (await cookies()).set(COUNCIL_COOKIE, result.token, {
-      httpOnly: true, sameSite: "strict", secure: process.env.APP_ENV === "production", path: "/", expires: new Date(result.expiresAt),
+      httpOnly: true, sameSite: "strict", secure: env().COOKIE_SECURE === "true", path: "/", expires: new Date(result.expiresAt),
     });
     return ok({ unlocked: true, expiresAt: result.expiresAt });
   } catch (error) { return storeError(error) ?? routeError(error); }

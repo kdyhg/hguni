@@ -1,3 +1,21 @@
-import { z } from "zod"; import { parseJson } from "@/lib/domain/validation"; import { requireBridge } from "@/lib/server/bridge-auth"; import { adminClient } from "@/lib/server/supabase"; import { env,isMockMode } from "@/lib/server/env"; import { fail,ok,routeError } from "@/lib/server/http";
+import { z } from "zod";
+import { parseJson } from "@/lib/domain/validation";
+import { requireBridge } from "@/lib/server/bridge-auth";
+import { env, isMockMode } from "@/lib/server/env";
+import { fail, ok, routeError } from "@/lib/server/http";
+import { authorizeBridgeJob } from "@/lib/server/local-bridge";
+
 const schema=z.object({leaseGeneration:z.number().int().positive()}).strict();
-export async function POST(request:Request,context:{params:Promise<{id:string}>}){try{const bridge=await requireBridge(request);const{id}=await context.params;const input=await parseJson(request,schema);if(isMockMode()||env().REAL_WRITES_ENABLED!=="true")return ok({authorized:false});const{data,error}=await adminClient().rpc("hguni_authorize_job",{p_job_id:id,p_bridge_id:bridge.id,p_lease_generation:input.leaseGeneration});if(error)throw error;return ok({authorized:data});}catch(error){return error instanceof Error&&error.message.includes("BRIDGE_UNAUTHORIZED")?fail("BRIDGE_UNAUTHORIZED","중계 인증 또는 실행 환경이 올바르지 않습니다.",401):routeError(error);}}
+export async function POST(request:Request,context:{params:Promise<{id:string}>}) {
+  try {
+    const bridge=await requireBridge(request);
+    const{id}=await context.params;
+    const input=await parseJson(request,schema);
+    const authorized=!isMockMode() && env().REAL_WRITES_ENABLED==="true" && authorizeBridgeJob(id, bridge.id, input.leaseGeneration);
+    return ok({authorized});
+  } catch(error) {
+    return error instanceof Error&&error.message.includes("BRIDGE_UNAUTHORIZED")
+      ? fail("BRIDGE_UNAUTHORIZED","중계 인증 또는 실행 환경이 올바르지 않습니다.",401)
+      : routeError(error);
+  }
+}

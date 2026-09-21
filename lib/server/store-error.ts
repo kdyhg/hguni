@@ -8,6 +8,7 @@ const errors: Record<string, [string, number, string]> = {
   ROSTER_REQUIRED: ["ROSTER_REQUIRED", 409, "오늘 활동하는 담당자를 먼저 등록하세요."],
   CATALOG_STALE: ["CATALOG_STALE", 409, "학생 또는 항목 정보가 바뀌었습니다. 다시 검색하세요."],
   DUPLICATE_PENALTY: ["DUPLICATE_PENALTY", 409, "이 활동에서 같은 학생에게 같은 항목을 이미 부과했습니다."],
+  REQUEST_ID_CONFLICT: ["REQUEST_ID_CONFLICT", 409, "같은 요청 식별값에 다른 내용이 들어왔습니다. 화면을 새로고침하세요."],
   NOT_FOUND: ["NOT_FOUND", 404, "내역을 찾을 수 없습니다."],
   CANCELLATION_INVALID: ["CANCELLATION_INVALID", 409, "현재 상태에서는 취소를 요청하거나 처리할 수 없습니다."],
 };

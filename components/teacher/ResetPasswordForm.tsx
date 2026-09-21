@@ -1,3 +1,5 @@
-"use client";
-import { useState } from "react"; import { createClient } from "@supabase/supabase-js"; import { Button } from "@/components/ui/Button";
-export function ResetPasswordForm(){const[p,setP]=useState("");const[c,setC]=useState("");const[m,setM]=useState("");async function submit(e:React.FormEvent){e.preventDefault();try{if(p!==c)throw new Error("비밀번호 확인이 일치하지 않습니다.");const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;if(!url||!key)throw new Error("Supabase 공개 설정이 필요합니다.");const client=createClient(url,key,{auth:{detectSessionInUrl:true,persistSession:false}});const{data}=await client.auth.getSession();if(!data.session)throw new Error("재설정 링크가 만료되었습니다.");const{error}=await client.auth.updateUser({password:p});if(error)throw error;setM("비밀번호를 변경했습니다. 다시 로그인하세요.");}catch(v){setM(v instanceof Error?v.message:"비밀번호를 변경하지 못했습니다.");}}return <form className="stack" onSubmit={submit}><input className="input" aria-label="새 비밀번호" type="password" minLength={8} autoComplete="new-password" value={p} onChange={e=>setP(e.target.value)}/><input className="input" aria-label="새 비밀번호 확인" type="password" minLength={8} autoComplete="new-password" value={c} onChange={e=>setC(e.target.value)}/><Button tone="primary">비밀번호 변경</Button><p className="status-line" role="status">{m}</p></form>}
+import Link from "next/link";
+
+export function ResetPasswordForm(){
+  return <div className="stack"><p className="status-line">로컬 서버에서는 이메일 재설정 링크를 보내지 않습니다. 관리자에게 계정 재초대 링크를 요청하세요.</p><Link className="button button--primary" href="/teacher/login">로그인으로 돌아가기</Link></div>;
+}

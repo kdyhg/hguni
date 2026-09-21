@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import type { CouncilStatus, PenaltyItem, PenaltyRecord, Student } from "@/lib/domain/contracts";
 import { isMockMode } from "./env";
-import { liveStore } from "./live-store";
+import { localStore } from "./local-store";
 import { mockStore } from "./mock-store";
 
 export const COUNCIL_COOKIE = "hguni_council_session";
@@ -26,7 +26,7 @@ export interface AppStore {
 }
 
 export function store(): AppStore {
-  return isMockMode() ? mockStore : liveStore;
+  return isMockMode() ? mockStore : localStore;
 }
 
 export async function councilToken() {
