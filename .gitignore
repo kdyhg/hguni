@@ -8,6 +8,8 @@ bridge-dist/
 *.log
 logs/
 state/
+data/
+backups/
 .DS_Store
 
 .env*
@@ -15,6 +17,7 @@ state/
 
 bridge/config/config.local.json
 bridge/config/*.secret.json
+config/google-service-account*.json
 *.bak
 *.dump
 *.sql.gz

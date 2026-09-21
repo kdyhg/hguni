@@ -1,7 +1,7 @@
 {
-  "apiBaseUrl": "https://your-hguni-site.vercel.app",
+  "apiBaseUrl": "http://127.0.0.1:3000",
   "bridgeToken": "paste-one-time-token-here",
-  "sourceScope": "hguni-production-school-a",
+  "sourceScope": "copy-SOURCE_SCOPE-from-env-local",
   "mode": "sqlserver",
   "pollActiveMs": 2000,
   "pollIdleMs": 15000,
